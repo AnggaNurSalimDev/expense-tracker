@@ -105,6 +105,18 @@ h2, h3, h4 { color: #444; margin: 0 0 10px 0; }
 .saldo-utama h4 { font-size: 14px; margin: 0 0 5px; }
 .saldo-utama h2 { font-size: 28px; margin: 0; color: #3f2b96; }
 
+.dropdown-kur {
+  padding: 4px 8px;
+  font-size: 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  max-width: 150px;
+}
+
+.saldo-utama h4 {
+  margin: 0;
+}
+
 .detail-arus { display: flex; gap: 15px; flex-shrink: 0; }
 .arus-kas {
   flex: 1;
@@ -148,6 +160,15 @@ input, select {
   border-radius: 8px;
   font-size: 14px;
   outline: none;
+}
+
+select option {
+  background: #ffffff;
+  color: #3a3768;
+}
+
+select {
+  color: #333;
 }
 
 .tombol-submit {
@@ -238,4 +259,6 @@ input, select {
   flex-direction: column;
   gap: 15px;
 }
+
+
 

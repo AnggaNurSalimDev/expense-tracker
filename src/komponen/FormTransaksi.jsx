@@ -90,10 +90,10 @@ export default function FormTransaksi({ onTambah, kursData, errorAPI }) {
           </select>
         </div>
       </div>
-
-      <button type="submit" className="tombol-tambah" style={{ marginTop: '15px' }}>
+      
+      <button type="submit" className="tombol-submit" style={{ marginTop: '15px' }}>
         Tambah Transaksi
-      </button>
+        </button>
     </form>
   );
 }
