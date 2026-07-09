@@ -14,6 +14,10 @@ export default function App() {
   const [sortir, setSortir] = useState('terbaru');
   const [tema, setTema] = useState('laki');
 
+  const [mataUang, setMataUang] = useState('IDR');
+  const [kursData, setKursData] = useState(null);
+  const [errorAPI, setErrorAPI] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('transaksiExpenseTracker', JSON.stringify(transaksi));
   }, [transaksi]);
@@ -25,6 +29,36 @@ export default function App() {
       document.body.classList.remove('tema-perempuan');
     }
   }, [tema]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    async function ambilKurs() {
+      try {
+        const response = await fetch('/api/get-rate', { signal });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        setKursData(data.conversion_rates); 
+        
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          console.error(error);
+          setErrorAPI(true);
+        }
+      }
+    }
+
+    ambilKurs();
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
 
   const tambahTransaksi = (dataBaru) => {
     setTransaksi([...transaksi, dataBaru]);
@@ -43,6 +77,14 @@ export default function App() {
     .reduce((total, item) => total + item.jumlah, 0);
 
   const saldoTotal = totalMasuk - totalKeluar;
+
+  let saldoTerditampilkan = saldoTotal;
+  if (mataUang !== 'IDR' && kursData && kursData['IDR']) {
+    const nilaiKursTujuan = kursData[mataUang];
+    if (nilaiKursTujuan) {
+      saldoTerditampilkan = (saldoTotal / kursData['IDR']) * nilaiKursTujuan;
+    }
+  }
 
   const dataPengeluaran = transaksi
     .filter((t) => t.tipe === 'keluar')
@@ -92,8 +134,26 @@ export default function App() {
           <div className="kolom-kiri">
             <div className="ringkasan">
               <div className="saldo-utama">
-                <h4>SALDO TOTAL</h4>
-                <h2>Rp {saldoTotal.toLocaleString('id-ID')}</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h4>SALDO TOTAL</h4>
+                  <select value={mataUang} onChange={(e) => setMataUang(e.target.value)} className="dropdown-kur">
+                    <option value="IDR">IDR (Rupiah)</option>
+                    <option value="USD">USD (Dollar AS)</option>
+                    <option value="JPY">JPY (Yen Jepang)</option>
+                    <option value="SGD">SGD (Dollar Singapura)</option>
+                  </select>
+                </div>
+                <h2>
+                  {mataUang === 'IDR' 
+                    ? `Rp ${saldoTerditampilkan.toLocaleString('id-ID')}` 
+                    : `${mataUang} ${saldoTerditampilkan.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                  }
+                </h2>
+                {errorAPI && (
+                  <span style={{ color: '#ff6b6b', fontSize: '12px', display: 'block', marginTop: '5px' }}>
+                    ⚠️ Koneksi API Kurs terputus. Hanya mode IDR yang tersedia.
+                  </span>
+                )}
               </div>
 
               <div className="detail-arus">
@@ -132,7 +192,7 @@ export default function App() {
               </div>
             )}
 
-            <FormTransaksi onTambah={tambahTransaksi} />
+            <FormTransaksi onTambah={tambahTransaksi} kursData={kursData} errorAPI={errorAPI}/>
           </div>
 
           <div className="kolom-kanan panel-daftar">

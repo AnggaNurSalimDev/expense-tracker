@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 
-export default function FormTransaksi({ onTambah }) {
+export default function FormTransaksi({ onTambah, kursData, errorAPI }) {
   const [nama, setNama] = useState('');
   const [jumlah, setJumlah] = useState('');
   const [tipe, setTipe] = useState('masuk');
   const [kategori, setKategori] = useState('Gaji');
+  const [mataUangInput, setMataUangInput] = useState('IDR');
 
   const kategoriMasuk = ['Gaji', 'Bonus', 'Investasi', 'Lainnya'];
   const kategoriKeluar = ['Makanan', 'Transportasi', 'Tagihan', 'Hiburan', 'Belanja', 'Lainnya'];
@@ -17,10 +18,23 @@ export default function FormTransaksi({ onTambah }) {
     e.preventDefault();
     if (!nama || !jumlah) return;
 
+    let jumlahFinal = parseFloat(jumlah);
+
+    if (mataUangInput !== 'IDR' && kursData && kursData['IDR']) {
+      const kursInput = kursData[mataUangInput];
+      if (kursInput) {
+        jumlahFinal = (jumlahFinal / kursInput) * kursData['IDR'];
+      }
+    }
+
+    const namaDisimpan = mataUangInput !== 'IDR' 
+      ? `${nama} (${jumlah} ${mataUangInput})` 
+      : nama;
+
     onTambah({
       id: crypto.randomUUID(),
-      nama,
-      jumlah: parseFloat(jumlah),
+      nama: namaDisimpan,
+      jumlah: jumlahFinal,
       tipe,
       kategori,
       timestamp: Date.now()
@@ -29,6 +43,7 @@ export default function FormTransaksi({ onTambah }) {
     setNama('');
     setJumlah('');
     setTipe('masuk');
+    setMataUangInput('IDR');
   };
 
   return (
@@ -38,12 +53,26 @@ export default function FormTransaksi({ onTambah }) {
         <input type="text" value={nama} onChange={(e) => setNama(e.target.value)} required />
       </div>
       
-      <div className="grup-input">
-        <label>Jumlah:</label>
-        <input type="number" value={jumlah} onChange={(e) => setJumlah(e.target.value)} required />
+      <div className="grup-input-sejajar" style={{ display: 'flex', gap: '10px' }}>
+        <div className="grup-input" style={{ flex: 2 }}>
+          <label>Jumlah:</label>
+          <input type="number" step="any" value={jumlah} onChange={(e) => setJumlah(e.target.value)} required />
+        </div>
+        
+        <div className="grup-input" style={{ flex: 1 }}>
+          <label>Mata Uang:</label>
+          <select value={mataUangInput} 
+          onChange={(e) => setMataUangInput(e.target.value)}
+          disabled={errorAPI}>
+            <option value="IDR">IDR</option>
+            <option value="USD">USD</option>
+            <option value="JPY">JPY</option>
+            <option value="SGD">SGD</option>
+          </select>
+        </div>
       </div>
       
-      <div className="grup-input-sejajar">
+      <div className="grup-input-sejajar" style={{ display: 'flex', gap: '10px' }}>
         <div className="grup-input" style={{ flex: 1 }}>
           <label>Tipe:</label>
           <select value={tipe} onChange={(e) => setTipe(e.target.value)}>
@@ -61,8 +90,10 @@ export default function FormTransaksi({ onTambah }) {
           </select>
         </div>
       </div>
-      
-      <button type="submit" className="tombol-submit">Tambah Transaksi</button>
+
+      <button type="submit" className="tombol-tambah" style={{ marginTop: '15px' }}>
+        Tambah Transaksi
+      </button>
     </form>
   );
 }
