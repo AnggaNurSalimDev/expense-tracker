@@ -1,16 +1,51 @@
-# React + Vite
+# Expense Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplikasi web untuk mencatat dan melacak pengeluaran harian, dibangun dengan React.
 
-Currently, two official plugins are available:
+🔗 **Demo langsung:** https://expense-tracker-angga7.vercel.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## React Compiler
+<img width="1920" height="1080" alt="Cuplikan layar dari 2026-07-16 17-48-12" src="https://github.com/user-attachments/assets/2460b594-c65c-4246-9262-7e2a0f31f681" />
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Fitur
 
-## Expanding the Oxlint configuration
+- Tambah / hapus catatan pengeluaran & pemasukan
+- Visualisasi data dengan grafik (Recharts)
+- Konversi mata uang real-time via API, diamankan lewat serverless proxy (Vercel)
+- Data tersimpan otomatis di browser (localStorage) — tidak hilang saat refresh
+- Tampilan glassmorphism dengan dua tema warna
+- Responsif untuk mobile & desktop
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Teknologi
+
+- React
+- JavaScript
+- CSS (glassmorphism design system)
+- Recharts
+- Vite
+- Vercel Serverless Functions (proxy untuk currency exchange API)
+
+## Menjalankan secara lokal
+
+```
+# clone repositori
+git clone https://github.com/AnggaNurSalimDev/expense-tracker.git
+cd expense-tracker
+
+# install dependency
+npm install
+
+# jalankan mode development
+npm run dev
+```
+
+Buka `http://localhost:5173` di browser.
+
+> Catatan: fitur konversi mata uang membutuhkan API key. Buat file `.env` sesuai contoh di `.env.example` (jika ada) sebelum menjalankan proxy secara lokal.
+
+## Catatan Pengembangan
+
+Proyek ini dibuat sebagai bagian dari portofolio frontend, dengan fokus pada:
+- Penanganan state dan data flow di React
+- Integrasi API pihak ketiga secara aman (API key tidak diekspos ke client)
+- Desain UI kustom (bukan template siap pakai)
